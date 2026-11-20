@@ -1,4 +1,5 @@
 # Lyrics Glass
+<img width="800" height="449" alt="Eminem-Stan2026-11-2102-38-32-ezgif com-optimize" src="https://github.com/user-attachments/assets/141e1321-07e1-4164-9aa9-bf5c66fdcd73" />
 
 A floating, oil-on-glass lyrics window for Spotify via **Spicetify**, featuring glowing, animated, time-synced lyrics and dynamic album art colors.
 
