@@ -1,5 +1,5 @@
 // NAME: Lyrics Glass
-// AUTHOR: you
+// AUTHOR: akshithvoddi77
 // DESCRIPTION: Floating oil-on-glass lyrics window with glowing, animated, synced lyrics.
 // Toggle: topbar button or Alt+L. Drag the header to move, drag the bottom-right corner to resize.
 
@@ -65,7 +65,7 @@
   .lg-lines{padding:0 26px}
 
   .lg-line{
-    --d:3; --p:0%;
+    --d:3;
     margin:6px 0; padding:6px 2px; font-size:25px; line-height:1.28; font-weight:700; letter-spacing:-.01em;
     color:rgba(255,255,255,.92); cursor:pointer; transform-origin:left center;
     opacity:max(.2, calc(1 - var(--d) * .2));
@@ -75,20 +75,24 @@
     overflow-wrap:anywhere;
   }
   .lg-line:hover{opacity:.85; filter:none}
-    .lg-line.on{
+  .lg-line.on{
     opacity:1;
     filter:drop-shadow(0 0 5px rgba(255,255,255,.55)) drop-shadow(0 0 18px var(--lg-a)) drop-shadow(0 0 38px var(--lg-b));
     transform:scale(1.04);
   }
-  .lg-line.on span{
-    background:linear-gradient(90deg,#fff 0,#fff var(--p),rgba(255,255,255,.34) calc(var(--p) + 1.5%));
-    -webkit-background-clip:text;
-    background-clip:text;
-    -webkit-text-fill-color:transparent;
-    color:transparent;
-    -webkit-box-decoration-break:slice;
-    box-decoration-break:slice;
+  .lg-row{
+    position:relative; display:inline-block;
+    color:rgba(255,255,255,.34);
   }
+  .lg-row::after{
+    content:attr(data-text);
+    position:absolute; left:0; top:0; width:100%; height:100%;
+    color:#fff; pointer-events:none;
+    clip-path:inset(0 calc(100% - var(--row-p, 0%)) 0 0);
+  }
+  .lg-line:not(.on) .lg-row{color:inherit}
+  .lg-line:not(.on) .lg-row::after{display:none}
+
   .lg-line.plain{opacity:.9; filter:none; transform:none; cursor:default; font-size:20px; font-weight:600}
   .lg-empty{padding:40px 26px; font-size:18px; font-weight:600; opacity:.7; text-shadow:0 0 18px var(--lg-a)}
 
@@ -174,7 +178,7 @@
   }
 
   async function fromSpotify(id) {
-    const url = `https://spclient.wg.spotify.com/color-lyrics/v2/track/${id}?format=json&vocalRemoval=false&market=from_token`;
+    const url = `https://spotify.com{id}?format=json&vocalRemoval=false&market=from_token`;
     const res = await S.CosmosAsync.get(url, null, { "app-platform": "WebPlayer" });
     const L = res && res.lyrics;
     if (!L || !L.lines || !L.lines.length) return null;
@@ -184,9 +188,9 @@
 
   async function fromLrclib(t) {
     const q = new URLSearchParams({ track_name: t.name, artist_name: t.artist, album_name: t.album, duration: Math.round(t.duration / 1000) });
-    let r = await fetch("https://lrclib.net/api/get?" + q);
+    let r = await fetch("https://lrclib.net?" + q);
     if (!r.ok) {
-      r = await fetch("https://lrclib.net/api/search?" + new URLSearchParams({ track_name: t.name, artist_name: t.artist }));
+      r = await fetch("https://lrclib.net?" + new URLSearchParams({ track_name: t.name, artist_name: t.artist }));
       if (!r.ok) return null;
       const arr = await r.json();
       const hit = arr.find((x) => x.syncedLyrics) || arr[0];
@@ -196,121 +200,3 @@
   }
   function lrcToResult(d) {
     if (d.syncedLyrics) return { synced: true, lines: parseLRC(d.syncedLyrics) };
-    if (d.plainLyrics) return { synced: false, lines: d.plainLyrics.split("\n").map((x) => ({ t: 0, text: x })) };
-    return null;
-  }
-
-  /* ---------- colors from album art ---------- */
-  async function applyColors(uri) {
-    let a = "#ff8ad8", b = "#7aa2ff";
-    try {
-      const c = await S.colorExtractor(uri);
-      a = c.VIBRANT || c.PROD_VIBRANT || c.LIGHT_VIBRANT || a;
-      b = c.DESATURATED || c.DARK_VIBRANT || c.VIBRANT_NON_ALARMING || b;
-    } catch (e) {}
-    root.style.setProperty("--lg-a", a);
-    root.style.setProperty("--lg-b", b);
-  }
-
-  /* ---------- render ---------- */
-  function showMessage(msg) {
-    els = []; lines = []; active = -2;
-    linesEl.innerHTML = `<div class="lg-empty">${msg}</div>`;
-    linesEl.style.padding = "0 26px";
-  }
-
-  function render() {
-    linesEl.innerHTML = "";
-    els = lines.map((l, i) => {
-      const d = document.createElement("div");
-      d.className = "lg-line" + (synced ? "" : " plain");
-      d.textContent = l.text || "♪";
-      if (synced) d.addEventListener("click", () => S.Player.seek(l.t));
-      linesEl.appendChild(d);
-      return d;
-    });
-    active = -2;
-    padLines();
-    scroller.scrollTop = 0;
-    if (synced) update(S.Player.getProgress());
-  }
-
-  function padLines() {
-    if (!synced) { linesEl.style.padding = "8px 26px 40px"; return; }
-    const h = Math.round(scroller.clientHeight / 2);
-    linesEl.style.padding = `${h - 30}px 26px ${h}px`;
-  }
-
-  function center() {
-    if (active < 0 || !els[active]) return;
-    const el = els[active];
-    const top = el.offsetTop - scroller.clientHeight / 2 + el.offsetHeight / 2;
-    scroller.scrollTo({ top, behavior: "smooth" });
-  }
-
-  function update(pos) {
-    if (!synced || !lines.length) return;
-    let i = -1;
-    while (i + 1 < lines.length && lines[i + 1].t <= pos + 120) i++;
-    if (i !== active) {
-      active = i;
-      els.forEach((e, k) => {
-        e.style.setProperty("--d", Math.abs(k - i));
-        e.classList.toggle("on", k === i);
-        if (k !== i) e.style.setProperty("--p", "0%");
-      });
-      center();
-    }
-    if (i >= 0 && els[i]) {
-      const a = lines[i], nextT = lines[i + 1] ? lines[i + 1].t : a.t + 4000;
-      const dur = Math.max(400, Math.min(nextT - a.t, 7000));
-      const p = Math.min(100, Math.max(0, ((pos - a.t) / dur) * 100));
-      els[i].style.setProperty("--p", p.toFixed(1) + "%");
-    }
-  }
-
-  function tick() {
-    if (!open) return;
-    update(S.Player.getProgress());
-    raf = requestAnimationFrame(tick);
-  }
-
-  /* ---------- load lyrics for current track ---------- */
-  async function load() {
-    const t = trackInfo();
-    const my = ++token;
-    titleEl.textContent = t.name || "Lyrics";
-    artistEl.textContent = t.artist;
-    if (!t.uri) return showMessage("Play a song to see lyrics.");
-    applyColors(t.uri);
-    showMessage("Finding lyrics…");
-
-    let result = null;
-    try { if (t.uri.startsWith("spotify:track:")) result = await fromSpotify(t.uri.split(":")[2]); } catch (e) {}
-    if (!result) { try { result = await fromLrclib(t); } catch (e) {} }
-    if (my !== token) return; // song changed while loading
-
-    if (!result || !result.lines.length) return showMessage("No lyrics found for this track.");
-    synced = result.synced;
-    lines = result.lines;
-    render();
-  }
-
-  /* ---------- open / close ---------- */
-  function setOpen(v) {
-    open = v;
-    root.classList.toggle("lg-hidden", !v);
-    cancelAnimationFrame(raf);
-    if (v) { load(); raf = requestAnimationFrame(tick); }
-  }
-  const toggle = () => setOpen(!open);
-
-  $(".lg-close").addEventListener("click", () => setOpen(false));
-  addEventListener("keydown", (e) => { if (e.altKey && e.key.toLowerCase() === "l") { e.preventDefault(); toggle(); } });
-  addEventListener("resize", padLines);
-  new ResizeObserver(padLines).observe(root);
-  S.Player.addEventListener("songchange", () => { if (open) load(); });
-
-  const icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>`;
-  new S.Topbar.Button("Lyrics Glass (Alt+L)", icon, toggle);
-})();
