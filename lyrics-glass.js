@@ -160,7 +160,7 @@
     return {
       uri: it.uri || "",
       name: it.name || md.title || "",
-      artist: (it.artists && it.artists[0] && it.artists[0].name) || md.artist_name || "",
+      artist: (it.artists && it.artists.at(0) && it.artists.at(0).name) || md.artist_name || "",
       album: (it.album && it.album.name) || md.album_title || "",
       duration: (it.duration && it.duration.milliseconds) || Number(md.duration) || 0,
     };
@@ -172,7 +172,7 @@
       const stamps = [...raw.matchAll(/\[(\d+):(\d+(?:\.\d+)?)\]/g)];
       if (!stamps.length) return;
       const words = raw.replace(/\[[^\]]*\]/g, "").trim();
-      stamps.forEach((m) => out.push({ t: (Number(m[1]) * 60 + Number(m[2])) * 1000, text: words }));
+      stamps.forEach((m) => out.push({ t: (Number(m.at(1)) * 60 + Number(m.at(2))) * 1000, text: words }));
     });
     return out.sort((a, b) => a.t - b.t);
   }
@@ -193,7 +193,7 @@
       r = await fetch("https://lrclib.net?" + new URLSearchParams({ track_name: t.name, artist_name: t.artist }));
       if (!r.ok) return null;
       const arr = await r.json();
-      const hit = arr.find((x) => x.syncedLyrics) || arr[0];
+      const hit = arr.find((x) => x.syncedLyrics) || arr.at(0);
       return hit ? lrcToResult(hit) : null;
     }
     return lrcToResult(await r.json());
