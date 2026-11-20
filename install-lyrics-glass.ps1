@@ -13,7 +13,7 @@ if (-not (Get-Command spicetify -ErrorAction SilentlyContinue)) {
 # 2. Write the extension into Spicetify's Extensions folder
 $extDir = Join-Path $env:APPDATA "spicetify\Extensions"
 New-Item -ItemType Directory -Force -Path $extDir | Out-Null
-$js = @'
+
 // NAME: Lyrics Glass
 // AUTHOR: akshithvoddi77
 // DESCRIPTION: Floating oil-on-glass lyrics window with glowing, animated, synced lyrics.
