@@ -15,7 +15,7 @@ $extDir = Join-Path $env:APPDATA "spicetify\Extensions"
 New-Item -ItemType Directory -Force -Path $extDir | Out-Null
 $js = @'
 // NAME: Lyrics Glass
-// AUTHOR: you
+// AUTHOR: akshithvoddi77
 // DESCRIPTION: Floating oil-on-glass lyrics window with glowing, animated, synced lyrics.
 // Toggle: topbar button or Alt+L. Drag the header to move, drag the bottom-right corner to resize.
 
