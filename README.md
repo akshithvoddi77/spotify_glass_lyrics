@@ -14,7 +14,8 @@ A floating, oil-on-glass lyrics window for Spotify via **Spicetify**, featuring 
 ### Option 1: One-Line PowerShell Install (Recommended)
 Open **PowerShell** and run:
 ```powershell
-irm https://githubusercontent.com | iex
+irm https://github.com/akshithvoddi77/spotify_glass_lyrics/main/install-lyrics-glass.ps1 | iex
+
 ```
 *(This automatically installs Spicetify if needed, copies `lyrics-glass.js` to your Extensions folder, and applies it to Spotify.)*
 
