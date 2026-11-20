@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Lyrics Glass",
+    "description": "Floating oil-on-glass lyrics window with glowing, animated, synced lyrics.",
+    "preview": "Eminem-Stan2026-11-2102-38-32-ezgif.com-optimize",
+    "main": "lyrics-glass.js",
+    "readme": "README.md",
+    "authors": [
+      {
+        "name": "akshithvoddi77",
+        "url": "https://github.com"
+      }
+    ],
+    "tags": ["lyrics", "glassmorphism", "ui", "synced-lyrics"]
+  }
+]
