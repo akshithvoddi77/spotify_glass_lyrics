@@ -6,7 +6,7 @@ Write-Host "`n==> Lyrics Glass installer" -ForegroundColor Magenta
 $env:Path += ";$env:LOCALAPPDATA\spicetify"
 if (-not (Get-Command spicetify -ErrorAction SilentlyContinue)) {
     Write-Host "==> Installing Spicetify..." -ForegroundColor Cyan
-    Invoke-WebRequest -UseBasicParsing "https://githubusercontent.com" | Invoke-Expression
+   Invoke-WebRequest -UseBasicParsing "https://githubusercontent.com" | Invoke-Expression
     $env:Path += ";$env:LOCALAPPDATA\spicetify"
 }
 
