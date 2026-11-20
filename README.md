@@ -24,7 +24,7 @@ irm https://raw.githubusercontent.com/akshithvoddi77/spotify_glass_lyrics/main/i
 1. Download `install-lyrics-glass.ps1` from this repository.
 2. Open PowerShell and run:
    ```powershell
-   powershell -ExecutionPolicy Bypass -File "\$env:USERPROFILE\Downloads\install-lyrics-glass.ps1"
+   powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\Downloads\install-lyrics-glass.ps1"
    ```
 
 ### Option 3: Manual Install (Windows / macOS / Linux)
