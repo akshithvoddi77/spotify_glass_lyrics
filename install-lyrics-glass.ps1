@@ -227,12 +227,14 @@ $js = @'
     linesEl.style.padding = "0 26px";
   }
 
-  function render() {
+    function render() {
     linesEl.innerHTML = "";
     els = lines.map((l, i) => {
       const d = document.createElement("div");
       d.className = "lg-line" + (synced ? "" : " plain");
-      d.textContent = l.text || "♪";
+      const span = document.createElement("span");
+      span.textContent = l.text || "♪";
+      d.appendChild(span);
       if (synced) d.addEventListener("click", () => S.Player.seek(l.t));
       linesEl.appendChild(d);
       return d;
