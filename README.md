@@ -20,10 +20,10 @@ A floating lyrics window for Spotify on Windows. It looks like oil on frosted gl
 
 ## Install
 
-Paste this into PowerShell, replacing `YOUR_USER` with the GitHub account that hosts this repo:
+Paste this into PowerShell:-
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/YOUR_USER/spotify_glass_lyrics/main/install-lyrics-glass.ps1 | iex
+iwr -useb https://raw.githubusercontent.com/akshithvoddci77/spotify_glass_lyrics/main/install-lyrics-glass.ps1 | iex
 ```
 
 The installer will:
